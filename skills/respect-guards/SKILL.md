@@ -15,7 +15,11 @@ Manage guard scripts that prevent repeating past mistakes. Guards are generated 
 
 1. Scan **both** directories for `*.json` trigger metadata files:
    - `~/.claude/respect/guards/*.json` (global)
-   - `~/.claude/projects/[ENCODED_CWD]/guards/*.json` (local to current project)
+   - Local guards: first compute the encoded CWD by running:
+     ```bash
+     ENCODED_CWD=$(pwd | sed 's/[\/.]/-/g')
+     ls ~/.claude/projects/${ENCODED_CWD}/guards/*.json 2>/dev/null
+     ```
 2. For each `.json` file, extract: triggers, lesson, created date
 3. Check if corresponding `.sh` file exists and is executable
 4. Display grouped by scope. Truncate lesson text to 50 chars max:
@@ -41,7 +45,7 @@ If no guards exist in either location, display: "No guards installed. Guards are
 
 When the user says "fix the [name] guard" or reports a guard misfiring:
 
-1. Search for the guard in both global and local directories
+1. Search for the guard in both global (`~/.claude/respect/guards/`) and local (`~/.claude/projects/$(pwd | sed 's/[\/.]/-/g')/guards/`) directories
 2. Read both `[name].sh` and `[name].json`
 3. Understand what the guard is trying to prevent (from the lesson and trigger metadata)
 4. Ask the user what went wrong (false positive? missed a case? wrong trigger?)
