@@ -19,7 +19,7 @@ teardown() {
 }
 
 # Helper: pipe JSON tool context into the script, capture stdout and stderr
-# When guard fires: exit 2, JSON on stderr. When no guard: exit 0, {} on stdout.
+# When guard fires: exit 0, JSON on stdout with permissionDecision: "ask". When no guard: exit 0, {} on stdout.
 run_check() {
   local tool_name="$1"
   local tool_input="$2"
@@ -76,8 +76,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/no-timeout.sh"
 
   run_check "Bash" "timeout 5 curl http://example.com"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
   [ "$decision" = "ask" ]
 }
 
@@ -93,8 +93,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/no-timeout.sh"
 
   run_check "Bash" "TIMEOUT 10 some-command"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
   [ "$decision" = "ask" ]
 }
 
@@ -126,8 +126,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/no-friday-deploy.sh"
 
   run_check "Bash" "git push origin main --force"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
   [ "$decision" = "ask" ]
 }
 
@@ -161,9 +161,9 @@ SCRIPT
   chmod +x "$GUARDS_DIR/warn-guard.sh"
 
   run_check "Bash" "rm -rf /tmp/test"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
-  reason=$(echo "$CHECK_STDERR" | jq -r '.systemMessage')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
+  reason=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecisionReason')
   [ "$decision" = "ask" ]
   [[ "$reason" == *"Dangerous recursive delete"* ]]
 }
@@ -195,8 +195,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/no-timeout.sh"
 
   run_check "Bash" "timeout 5 curl example.com"
-  [ "$CHECK_EXIT" -eq 2 ]
-  reason=$(echo "$CHECK_STDERR" | jq -r '.systemMessage')
+  [ "$CHECK_EXIT" -eq 0 ]
+  reason=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecisionReason')
   [[ "$reason" == *"[no-timeout]"* ]]
   [[ "$reason" == *"Use gtimeout on macOS instead"* ]]
 }
@@ -296,8 +296,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/zzz-second.sh"
 
   run_check "Bash" "deploy production"
-  [ "$CHECK_EXIT" -eq 2 ]
-  reason=$(echo "$CHECK_STDERR" | jq -r '.systemMessage')
+  [ "$CHECK_EXIT" -eq 0 ]
+  reason=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecisionReason')
   # Only one decision returned (first alphabetically)
   [[ "$reason" == *"First guard"* ]]
   [[ "$reason" != *"Second guard"* ]]
@@ -324,9 +324,9 @@ SCRIPT
   chmod +x "$GUARDS_DIR/zzz-fail.sh"
 
   run_check "Bash" "deploy production"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
-  reason=$(echo "$CHECK_STDERR" | jq -r '.systemMessage')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
+  reason=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecisionReason')
   [ "$decision" = "ask" ]
   [[ "$reason" == *"Deploy blocked by second guard"* ]]
 }
@@ -345,8 +345,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/no-secrets.sh"
 
   run_check "Write" "password = mysecret123"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
   [ "$decision" = "ask" ]
 }
 
@@ -362,8 +362,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/no-secrets.sh"
 
   run_check "Edit" "api_key = abc123xyz"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
   [ "$decision" = "ask" ]
 }
 
@@ -404,8 +404,8 @@ SCRIPT
 
   # Should fire for Slack MCP tool
   run_check "mcp__plugin_slack_slack__slack_send_message" "send_message to #general"
-  [ "$CHECK_EXIT" -eq 2 ]
-  decision=$(echo "$CHECK_STDERR" | jq -r '.hookSpecificOutput.permissionDecision')
+  [ "$CHECK_EXIT" -eq 0 ]
+  decision=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecision')
   [ "$decision" = "ask" ]
 }
 
@@ -456,7 +456,7 @@ SCRIPT
 
   # Should fire for Bash
   run_check "Bash" "dangerous command"
-  [ "$CHECK_EXIT" -eq 2 ]
+  [ "$CHECK_EXIT" -eq 0 ]
 
   # Should NOT fire for MCP tool (no tools field = default only)
   run_check "mcp__some_server__some_tool" "dangerous input"
@@ -477,11 +477,11 @@ SCRIPT
 
   # Should fire for Bash
   run_check "Bash" "delete something"
-  [ "$CHECK_EXIT" -eq 2 ]
+  [ "$CHECK_EXIT" -eq 0 ]
 
   # Should fire for Datadog MCP
   run_check "mcp__plugin_acme_datadog__delete_monitor" "delete monitor 123"
-  [ "$CHECK_EXIT" -eq 2 ]
+  [ "$CHECK_EXIT" -eq 0 ]
 
   # Should NOT fire for unmatched MCP
   run_check "mcp__plugin_github__create_issue" "delete from description"
@@ -500,8 +500,8 @@ SCRIPT
   chmod +x "$GUARDS_DIR/no-lesson.sh"
 
   run_check "Bash" "risky operation"
-  [ "$CHECK_EXIT" -eq 2 ]
-  reason=$(echo "$CHECK_STDERR" | jq -r '.systemMessage')
+  [ "$CHECK_EXIT" -eq 0 ]
+  reason=$(echo "$CHECK_STDOUT" | jq -r '.hookSpecificOutput.permissionDecisionReason')
   [[ "$reason" == *"Risky action detected"* ]]
   # No lesson appended
   [[ "$reason" != *"Lesson:"* ]]
