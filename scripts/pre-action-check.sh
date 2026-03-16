@@ -10,6 +10,7 @@ trap 'echo "{}"; exit 0' ERR
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // ""' 2>/dev/null || echo "")
 TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input | del(.description) | [.. | strings] | join(" ")' 2>/dev/null || echo "")
+TOOL_INPUT_RAW=$(echo "$INPUT" | jq -c '.tool_input // {}' 2>/dev/null || echo "{}")
 CWD=$(echo "$INPUT" | jq -r '.cwd // ""' 2>/dev/null || echo "")
 
 # Default allowed tools (when guard has no "tools" field)
@@ -76,7 +77,14 @@ for guards_dir in $GUARD_DIRS; do
     while IFS= read -r trigger; do
       [ -z "$trigger" ] && continue
       trigger_lower=$(echo "$trigger" | tr '[:upper:]' '[:lower:]')
-      if echo "$TOOL_INPUT_LOWER" | grep -qwF -- "$trigger_lower"; then
+      # Use -w (word boundary) only for pure-word triggers (letters/numbers/underscore)
+      # Use plain -F for triggers containing punctuation (e.g., "config.", ".env")
+      if echo "$trigger_lower" | grep -qE '[^[:alnum:]_]'; then
+        GREP_FLAGS="-qF"
+      else
+        GREP_FLAGS="-qwF"
+      fi
+      if echo "$TOOL_INPUT_LOWER" | grep $GREP_FLAGS -- "$trigger_lower"; then
         MATCHED=true
         break
       fi
@@ -88,7 +96,7 @@ for guards_dir in $GUARD_DIRS; do
       if [ -x "$GUARD_SCRIPT" ]; then
         # Execute guard script with tool context
         GUARD_OUTPUT=""
-        if GUARD_OUTPUT=$(bash "$GUARD_SCRIPT" "$TOOL_NAME" "$TOOL_INPUT" 2>/dev/null); then
+        if GUARD_OUTPUT=$(bash "$GUARD_SCRIPT" "$TOOL_NAME" "$TOOL_INPUT_RAW" 2>/dev/null); then
           # Guard passed (exit 0) - no warning needed
           continue
         fi
