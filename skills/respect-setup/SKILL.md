@@ -10,8 +10,13 @@ Onboarding wizard for configuring the respect economy.
 ## On invocation
 
 1. Check if `~/.claude/respect/config.json` exists
-2. If it exists, ask: "Config already exists. Reconfigure from scratch, or cancel?"
+2. If it exists, show current settings summary, then ask:
+   - "1. Modify a specific setting"
+   - "2. Reconfigure from scratch"
+   - "3. Cancel (keep current config)"
    - If cancel: stop
+   - If modify: show numbered list of settings (tiers, thresholds, emoji, tip sizes, status line format). Let user pick one, change just that setting, write config atomically, done.
+   - If reconfigure: proceed to step 3
 3. Ask questions one at a time:
    a. Tier count and names — accept defaults (lurker/contributor/trusted/veteran/partner) or enter custom names (3-6 tiers)
    b. Tier thresholds — balance required for each tier (defaults: 0/20/60/150/300)
