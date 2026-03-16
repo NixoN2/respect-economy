@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "balance": 65,
+  "tier": "trusted",
+  "tier_index": 2,
+  "lifetime_earned": 36,
+  "lifetime_lost": 1,
+  "sessions": 5,
+  "last_updated": "2026-03-15T10:00:00Z",
+  "history": [
+    {"date": "2026-03-13T09:00:00Z", "delta": 5, "reason": "great debugging", "session": 1},
+    {"date": "2026-03-13T10:00:00Z", "delta": 5, "reason": "perfect explanation", "session": 1},
+    {"date": "2026-03-14T09:00:00Z", "delta": 5, "reason": "tip", "session": 2},
+    {"date": "2026-03-14T10:00:00Z", "delta": 5, "reason": "tip", "session": 3},
+    {"date": "2026-03-15T09:00:00Z", "delta": 5, "reason": "tip", "session": 4},
+    {"date": "2026-03-15T09:30:00Z", "delta": 5, "reason": "tip", "session": 4},
+    {"date": "2026-03-15T10:00:00Z", "delta": -1, "reason": "correction", "session": 5},
+    {"date": "2026-03-15T10:05:00Z", "delta": 5, "reason": "excellent", "session": 5},
+    {"date": "2026-03-15T10:10:00Z", "delta": 1, "reason": "tip", "session": 5}
+  ]
+}

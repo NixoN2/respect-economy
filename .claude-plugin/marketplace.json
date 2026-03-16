@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "respect",
+  "description": "Build trust with your AI agent. Claude learns from feedback, earns better behavior over time.",
+  "owner": {
+    "name": "Andrei Zhukov",
+    "url": "https://github.com/NixoN2"
+  },
+  "plugins": [
+    {
+      "name": "respect",
+      "description": "Build trust with your AI agent. Claude learns from feedback, earns better behavior over time.",
+      "version": "3.5.0",
+      "author": {
+        "name": "Andrei Zhukov",
+        "url": "https://github.com/NixoN2"
+      },
+      "source": "./",
+      "category": "productivity",
+      "strict": false
+    }
+  ]
+}

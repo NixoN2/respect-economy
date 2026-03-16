@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "tiers": [
+    { "name": "lurker",      "min_balance": 0,   "emoji": "👤" },
+    { "name": "contributor", "min_balance": 20,  "emoji": "🌱" },
+    { "name": "trusted",     "min_balance": 60,  "emoji": "⚡" },
+    { "name": "veteran",     "min_balance": 150, "emoji": "🔥" },
+    { "name": "partner",     "min_balance": 300, "emoji": "🤝" }
+  ],
+  "corrections": {
+    "enabled": true,
+    "sensitivity": "medium",
+    "delta": -1,
+    "custom_patterns": []
+  },
+  "tips": {
+    "sizes": {
+      "small":  1,
+      "medium": 3,
+      "large":  5
+    },
+    "allow_custom": true,
+    "max_custom": 10,
+    "max_per_session": null,
+    "require_reason": false
+  },
+  "statusline": {
+    "format": "{emoji} {balance} ({name})"
+  }
+}
