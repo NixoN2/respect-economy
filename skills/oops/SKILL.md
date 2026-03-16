@@ -89,7 +89,10 @@ Accepts correction size anywhere in the message: `/oops medium`, `/oops that was
    - When writing globally, tell the user: "This learning applies globally across all projects."
 
 7. **Generate a guard script** to prevent this mistake in the future:
-   - Create directory `~/.claude/respect/guards/` if it doesn't exist
+   - **Choose the guard directory based on learning scope (from step 6):**
+     - **Global** corrections → `~/.claude/respect/guards/`
+     - **Local** corrections → `~/.claude/projects/[ENCODED_CWD]/guards/` (where ENCODED_CWD = CWD with `/` and `.` replaced by `-`)
+   - Create the directory if it doesn't exist
    - Generate a short, unique filename from the summary (e.g., `no-timeout-on-macos.sh`)
    - Write a guard script that can **programmatically detect** this mistake before it happens
    - Write a trigger file (same name with `.json` extension) with metadata
