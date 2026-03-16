@@ -1,6 +1,6 @@
 {
   "name": "respect",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "description": "AI feedback system that turns tips into persistent memory and mistakes into executable guard scripts. Teach once — Claude remembers across sessions and projects.",
   "author": {
     "name": "Andrei Zhukov",
