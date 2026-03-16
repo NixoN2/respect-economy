@@ -88,10 +88,9 @@ for trigger_file in "$GUARDS_DIR"/*.json; do
         fi
         jq -n --arg reason "$REASON" '{
           hookSpecificOutput: {
-            hookEventName: "PreToolUse",
-            permissionDecision: "ask",
-            permissionDecisionReason: $reason
-          }
+            permissionDecision: "ask"
+          },
+          systemMessage: $reason
         }'
         exit 0
       fi
