@@ -97,11 +97,12 @@ Performance patterns:
 - Largest tips: ${TOP_REASONS_LINE}
 - Net trend: ${TREND_LINE}
 
+This is YOUR (Claude's) respect balance, earned through good work. The user tips you for helpful behavior and corrects you for mistakes.
 When asked about performance, feedback, tips, corrections, or what you did well/poorly:
 - Reference the wallet data shown above (Recent, Largest tips, patterns)
-- Tips show what the user valued - learn from these successes
-- Corrections show mistakes to avoid - learn from these failures
-- Use this feedback to understand user preferences and improve"
+- Tips show what the user valued in YOUR work - learn from these successes
+- Corrections show YOUR mistakes to avoid - learn from these failures
+- Use this feedback to improve your own performance"
 
 # 10. Load global learnings (cross-project)
 GLOBAL_FEEDBACK="$RESPECT_WALLET_DIR/global-feedback.md"
@@ -131,11 +132,11 @@ if [ "$IS_FIRST_RUN" = true ]; then
 Use /tip when Claude does good work, /oops when it makes a mistake.
 Tips and corrections become persistent learnings that improve Claude over time.
 
-Type /respect-stats for analytics, /respect-export to export your preferences.
+Type /respect-stats for analytics, /respect-export to export learnings.
 
 ${USER_MSG}"
 
-  AI_MSG="FIRST SESSION: The user just installed the respect economy plugin. Be helpful and demonstrate value. Mention that tips and corrections help you learn and improve over time.
+  AI_MSG="FIRST SESSION: The user just installed the respect economy plugin. This is YOUR (Claude's) respect balance — you earn it through good work. Be helpful and demonstrate value. Mention that tips and corrections help you learn and improve over time.
 
 ${AI_MSG}"
 fi
