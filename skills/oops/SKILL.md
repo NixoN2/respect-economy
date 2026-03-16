@@ -214,7 +214,27 @@ Accepts correction size anywhere in the message: `/oops medium`, `/oops that was
    - Skip guard generation silently
    - The learning still gets recorded in respect-feedback.md
 
-8. After generating the guard, tell the user:
+8. **Self-test the guard before reporting success:**
+   After writing both files, verify the guard actually works:
+
+   - **Positive test** (should fire): run the guard script with a sample input containing the trigger keyword
+     ```bash
+     bash ~/.claude/respect/guards/[name].sh "Bash" "[sample input with trigger]"
+     ```
+     Expected: exits non-zero with a warning message
+
+   - **Negative test** (should NOT fire): run with a similar but non-matching input
+     ```bash
+     bash ~/.claude/respect/guards/[name].sh "Bash" "[input without trigger or with similar-but-different word]"
+     ```
+     Expected: exits 0 silently
+
+   If either test fails:
+   - Fix the guard script and trigger file
+   - Re-run both tests
+   - Only proceed once both pass
+
+10. After generating the guard, tell the user:
    - "Guard created: [filename]. This will warn you before [description]."
    - "If the guard misfires, just tell me 'fix the [name] guard' and I'll update it."
 

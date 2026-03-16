@@ -9,7 +9,7 @@ trap 'echo "{}"; exit 0' ERR
 # Read tool context from stdin
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // ""' 2>/dev/null || echo "")
-TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input | [.. | strings] | join(" ")' 2>/dev/null || echo "")
+TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input | del(.description) | [.. | strings] | join(" ")' 2>/dev/null || echo "")
 
 # Default allowed tools (when guard has no "tools" field)
 DEFAULT_TOOLS="Bash|Write|Edit|NotebookEdit"
@@ -62,7 +62,7 @@ for trigger_file in "$GUARDS_DIR"/*.json; do
   while IFS= read -r trigger; do
     [ -z "$trigger" ] && continue
     trigger_lower=$(echo "$trigger" | tr '[:upper:]' '[:lower:]')
-    if echo "$TOOL_INPUT_LOWER" | grep -qF "$trigger_lower"; then
+    if echo "$TOOL_INPUT_LOWER" | grep -qwF -- "$trigger_lower"; then
       MATCHED=true
       break
     fi

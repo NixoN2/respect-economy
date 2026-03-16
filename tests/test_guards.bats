@@ -98,6 +98,22 @@ SCRIPT
   [ "$decision" = "ask" ]
 }
 
+@test "trigger does not fire on word prefix (gtimeout should not match timeout trigger)" {
+  cat > "$GUARDS_DIR/no-timeout.json" <<'EOF'
+{"triggers": ["timeout"], "lesson": "timeout not available on macOS"}
+EOF
+  cat > "$GUARDS_DIR/no-timeout.sh" <<'SCRIPT'
+#!/usr/bin/env bash
+echo "timeout is not available on macOS"
+exit 1
+SCRIPT
+  chmod +x "$GUARDS_DIR/no-timeout.sh"
+
+  run_check "Bash" "gtimeout 5 curl http://example.com"
+  [ "$CHECK_EXIT" -eq 0 ]
+  [ "$CHECK_STDOUT" = "{}" ]
+}
+
 @test "guard does not fire when trigger does not match" {
   cat > "$GUARDS_DIR/no-timeout.json" <<'EOF'
 {"triggers": ["timeout"], "lesson": "timeout not available on macOS"}
